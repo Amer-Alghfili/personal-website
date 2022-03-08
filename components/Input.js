@@ -4,7 +4,8 @@ import Label from "../components/Label";
 function Input({
   type = "text",
   fullWidth = false,
-  icon, isDark = true,
+  icon,
+  isDark = true,
   styles,
   label,
   htmlFor,
@@ -19,7 +20,7 @@ function Input({
             <span
               className="z-10 h-full leading-snug font-normal absolute text-center 
                     text-gray-400  bg-transparent rounded text-base items-center 
-                    justify-center w-8 pl-3 py-3 focus-within:
+                    justify-center w-8 ps-3 py-3 focus-within:
                     flex 
                     "
             >
@@ -31,9 +32,14 @@ function Input({
             {...others}
             className={`px-3 py-3
                  placeholder-gray-400  relative 
-                ${isDark ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-900'} rounded text-sm  ${fullWidth ? 'w-full' : 'w-96'}
-                outline-none focus:outline-none focus:shadow-outline ${icon && "pl-10"
-              } 
+                ${
+                  isDark
+                    ? "bg-gray-800 text-white"
+                    : "bg-gray-200 text-gray-900"
+                } rounded text-sm  ${fullWidth ? "w-full" : "w-96"}
+                outline-none focus:outline-none focus:shadow-outline ${
+                  icon && "ps-10"
+                } 
                 focus:ring-2 focus:ring-indigo-500 ${styles} 
             }`}
           />

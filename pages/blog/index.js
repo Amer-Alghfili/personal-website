@@ -1,129 +1,177 @@
-import React, { useEffect, useState } from 'react'
-import Link from 'next/link'
+import React, { useEffect, useState } from "react";
+import Head from "next/head";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import trans from "../../locale/locale.json";
 import Prismic from "prismic-javascript";
 import { AiOutlineSearch } from "react-icons/ai";
-import { client } from "../../prismic-configuration"
-import Footer from '../../components/Footer'
-import Header from '../../components/Header'
+import { client } from "../../prismic-configuration";
+import Footer from "../../components/Footer";
+import Header from "../../components/Header";
 import Input from "../../components/Input";
-import LoadingSpinner from '../../components/LoadingSpinner';
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 function blog() {
-    const [term, setTerm] = useState("")
+  const [term, setTerm] = useState("");
 
-    const [isLoading, setIsLoading] = useState(false)
-    const [result, setResult] = useState([])
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState([]);
+  const { locale } = useRouter();
 
-    useEffect(() => {
-        searchTerm()
-    }, [])
+  useEffect(() => {
+    searchTerm();
+  }, []);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            if (term.trim()) searchTerm();
-        }, 300);
-        return () => clearTimeout(timer);
-    }, [term])
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      searchTerm();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [term]);
 
-
-    const searchTerm = async () => {
-        setIsLoading(true)
-
-        await client.query([
-            Prismic.Predicates.at('document.type ', 'post',),
-            Prismic.Predicates.fulltext('document', term),
-        ]).then(res => {
-            setIsLoading(false)
-            setResult(res.results)
+  const searchTerm = async () => {
+    setIsLoading(true);
+    if (term) {
+      await client
+        .query([
+          Prismic.Predicates.at("document.type ", "post"),
+          Prismic.Predicates.fulltext("document", term),
+        ])
+        .then((res) => {
+          setIsLoading(false);
+          setResult(res.results);
+        });
+    } else {
+      client
+        .query([Prismic.Predicates.at("document.type", "post")], {
+          lang: locale === "ar" ? "ar-sa" : "en-us",
         })
-
+        .then(({ results }) => {
+          setIsLoading(false);
+          setResult(results);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
+  };
 
-    const renderedResult = result?.map((res) => {
-        const { uid, last_publication_date, tags, slugs } = res
-        const { title, content } = res.data
+  useEffect(
+    function fetchBlogsEffect() {
+      function fetchBlogs() {
+        console.log(locale);
+        client
+          .query([Prismic.Predicates.at("document.type", "post")], {
+            lang: locale === "ar" ? "ar-sa" : "en-us",
+          })
+          .then(({ results }) => {
+            setIsLoading(false);
+            setResult(results);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+      fetchBlogs();
+    },
+    [locale]
+  );
 
-        const renderedTags = tags?.map(tag => <li key={tag} className="mr-4 p-2 pr-4 pl-4 xl:text-xs mb-2 text-sm rounded-md 
-        bg-indigo-600 bg-opacity-10 text-indigo-400 font-medium ">{tag}</li>)
-
-        let date = last_publication_date.split("-").slice(0, 3)
-
-        // Formatting weird raw date from Prismic
-        date = [date[0], " / ", date[1], " / ", date[2].split("").slice(0, 2).join("")]
-
-        return (<li className="w-full" key={uid}>
-            <Link href={`/blog/${slugs[0]}`}>
-                <a className="p-4  bg-gray-800 w-full md:h-64  md:mr-8 mb-6 overflow-ellipsis block shadow-md rounded-lg">
-                    <div className="flex items-center flex-wrap justify-between mb-4">
-                        <ul className="flex items-center flex-wrap mb-4 xl:mb-0 text-sm" >{renderedTags}</ul>
-                        <div className="text-sm text-gray-300">
-                            {date}
-                        </div>
-                    </div>
-                    <div>
-                        <h1 className="font-bold text-lg xl:text-3xl  mb-4 ">{title[0].text}</h1>
-                        <p className="w-full h-full md:block  overflow-hidden text-gray-300">{
-                            content[0].text.length > 50 ? content[0].text.substring(0, 200) + " ..." : content[0].text
-                        } </p>
-                    </div>
-                </a>
-            </Link>
-        </li >)
-    })
-
+  const renderedResult = result?.map((res) => {
+    const { uid } = res;
+    const { release_date, title, body } = res.data;
+    const { primary } = body[0];
+    const { text } = primary;
     return (
-        <>
-            <Header />
-            <main className="min-h-screen mb-10 " >
-                <section className=" flex flex-col  items-center">
-                    <h1 className="text-center text-5xl font-bold relative">My Blog
-                        <div className="h-3 w-full absolute -bottom-2 left-0 bg-indigo-500 transform
-                -rotate-1 opacity-40 transition duration-300"></div>
-                    </h1>
-                    <h2 className="text-center mt-6">A collection of my blog posts, mostly about Distributed Systems and Data Science. </h2>
-                </section>
+      <li className="w-full" key={uid}>
+        <Link href={`/blog/${uid}`}>
+          <a className="p-4  bg-gray-800 w-full md:h-64 mb-6 overflow-ellipsis block shadow-md rounded-lg">
+            <div className="flex items-center flex-wrap justify-between mb-4">
+              <div className="text-sm text-gray-300">{release_date}</div>
+            </div>
+            <div>
+              <h1 className="font-bold text-lg xl:text-3xl mb-4 ">
+                {title[0].text}
+              </h1>
+              <p className="w-full h-full md:block  overflow-hidden text-gray-300">
+                {text[0].text.length > 50
+                  ? text[0].text.substring(0, 200) + " ..."
+                  : text[0].text}{" "}
+              </p>
+            </div>
+          </a>
+        </Link>
+      </li>
+    );
+  });
 
-                <section className="flex justify-center mt-4 xl:mt-10 ">
-                    <div className=" p-2 w-full xl:w-4/6 flex text-center flex-wrap justify-center xl:justify-between items-center">
-                        <div className="w-full xl:w-96">
-                            <Input
-                                id="search-input"
-                                className="hidden lg:block"
-                                placeholder="Search..."
-                                fullWidth
-                                icon={<AiOutlineSearch />}
-                                styles="bg-gray-800 "
-                                value={term}
-                                onChange={(e) => setTerm(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                </section>
+  return (
+    <>
+      <div
+        dir={locale === "ar" ? "rtl" : "ltr"}
+        style={locale === "ar" ? { fontFamily: "Cairo, sans-serif" } : {}}
+      >
+        <Head>
+          <title>{trans[locale].titles.blogs}</title>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Montserrat:ital,wght@0,100;0,400;1,100&display=swap"
+            rel="stylesheet"
+          />
+          <link rel="preconnect" href="https://fonts.googleapis.com/%22%3E" />
+          <link
+            rel="preconnect"
+            href="https://fonts.gstatic.com/"
+            crossorigin
+          />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Cairo&display=swap"
+            rel="stylesheet"
+          />
+        </Head>
+        <Header />
+        <main className="min-h-screen mb-10 ">
+          <section className=" flex flex-col  items-center">
+            <h1 className="text-center text-5xl font-bold relative">
+              {trans[locale].blogPage.myBlogs}
+              <div
+                className="h-3 w-full absolute -bottom-2 start-0 bg-indigo-500 transform
+                -rotate-1 opacity-40 transition duration-300"
+              ></div>
+            </h1>
+          </section>
+          <section className="flex justify-center mt-4 xl:mt-10 ">
+            <div className="p-2 w-full xl:w-4/6 flex text-center flex-wrap justify-center xl:justify-between items-center">
+              <div className="w-full">
+                <Input
+                  id="search-input"
+                  className="hidden lg:block"
+                  placeholder={trans[locale].searchPlaceholder}
+                  fullWidth
+                  icon={<AiOutlineSearch />}
+                  styles="bg-gray-800"
+                  value={term}
+                  onChange={(e) => setTerm(e.target.value)}
+                />
+              </div>
+            </div>
+          </section>
 
-                <section className="mt-2 xl:mt-10 flex justify-center " >
-                    {isLoading ? (
-                        <div className="w-full p-10 xl:w-4/6 flex justify-between items-center">
-                            <LoadingSpinner />
-                        </div>
-                    ) : (
-                        <ul className="w-full p-2 xl:w-4/6">
-                            {
-                                renderedResult?.length > 0 ? (
-                                    <>
-                                        {renderedResult}
-                                    </>
-                                ) : (
-                                    <h1 className="font-semibold text-xl text-center w-full">Empty</h1>
-                                )
-                            }
-                        </ul>
-                    )}
-                </section>
-            </main>
-            <Footer />
-        </>
-    )
+          <section className="mt-2 xl:mt-10 flex justify-center ">
+            {isLoading ? (
+              <div className="w-full p-10 xl:w-4/6 flex justify-between items-center">
+                <LoadingSpinner />
+              </div>
+            ) : (
+              <ul className="w-full p-2 xl:w-4/6">{renderedResult}</ul>
+            )}
+          </section>
+        </main>
+        <Footer />
+      </div>
+    </>
+  );
 }
 
-
-export default blog
+export default blog;
