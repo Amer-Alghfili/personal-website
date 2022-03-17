@@ -8,11 +8,12 @@ import { FiSend } from "react-icons/fi";
 import { AiFillGithub } from "react-icons/ai";
 import Prismic from "prismic-javascript";
 import { client } from "../prismic-configuration";
+import { Stack, Skeleton, SkeletonText, Box } from "@chakra-ui/react";
 
 function projects() {
   const { locale } = useRouter();
   const [result, setResult] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(
     function fetchProjectsEffect() {
       function fetchProjects() {
@@ -27,9 +28,7 @@ function projects() {
             }
             setResult(results);
           })
-          .catch((err) => {
-            console.log(err);
-          });
+          .catch((err) => {});
       }
       fetchProjects();
     },
@@ -40,7 +39,6 @@ function projects() {
     const { name, description, img } = res.data;
     const { url: githubLink } = res.data["github-link"];
     const { url: visitLink } = res.data["visit-link"];
-    console.log(res.data);
     const { text: projectName } = name[0];
     const { text: projectDescription } = description[0];
     const { url, alt } = img;
@@ -104,7 +102,7 @@ function projects() {
       </Head>
       <Header />
       <main className=" flex flex-col  items-center text-center min-h-screen pt-10 xl:pt-20">
-        <section className="block ">
+        <section className="block">
           <h1 className="text-center text-5xl font-bold relative my-8">
             {trans[locale].projectPage.myProjects}
             <div
@@ -114,9 +112,22 @@ function projects() {
           </h1>
         </section>
         {isLoading ? (
-          <div className="w-full p-10 xl:w-4/6 flex justify-between items-center">
-            <LoadingSpinner />
-          </div>
+          [
+            <Stack width="100%">
+              <Box className="p-4 py-12 md:p-12 md:pb-16 bg-gray-800 w-full mb-6 overflow-ellipsis block shadow-md rounded-lg">
+                <Skeleton height="6rem" width="6rem" />
+                <Skeleton my="7" width="25%" height="1rem" />
+                <SkeletonText my="7" noOfLines={3} spacing="4" />
+              </Box>
+            </Stack>,
+            <Stack width="100%">
+              <Box className="p-4 py-12 md:p-12 md:pb-16 bg-gray-800 w-full mb-6 overflow-ellipsis block shadow-md rounded-lg">
+                <Skeleton height="6rem" width="6rem" />
+                <Skeleton my="7" width="25%" height="1rem" />
+                <SkeletonText my="7" noOfLines={3} spacing="4" />
+              </Box>
+            </Stack>,
+          ]
         ) : (
           <>{renderedResult}</>
         )}

@@ -14,3 +14,20 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.books {
+  display: -ms-grid;
+  display: grid;
+  /* grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr)); */
+  grid-template-columns: repeat(auto-fill, 24rem);
+  -ms-grid-columns: repeat(auto-fill, 24rem);
+  justify-content: center;
+  gap: 2rem;
+}
+
+@media (max-width: 428px) {
+  .books {
+    grid-template-columns: 100%;
+    -ms-grid-columns: 100%;
+  }
+}

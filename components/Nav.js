@@ -59,6 +59,14 @@ function Nav() {
             <a>{trans[locale].header.projects}</a>
           </Link>
         </li>
+        <li
+          className="align-center flex ms-8 hover:border-2 border-purple-600 
+                transition duration-300 ease-in-out cursor-pointer"
+        >
+          <Link href="/books">
+            <a>{trans[locale].header.books}</a>
+          </Link>
+        </li>
       </ul>
     </nav>
   );

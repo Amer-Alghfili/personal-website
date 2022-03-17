@@ -63,6 +63,14 @@ function MinNav() {
                   <a>{trans[locale].header.projects}</a>
                 </Link>
               </li>
+              <li
+                className="p-4 text-center text-lg font-medium"
+                onClick={() => setMenuIsOpen(false)}
+              >
+                <Link href="/books">
+                  <a>{trans[locale].header.books}</a>
+                </Link>
+              </li>
             </ul>
           </>
         ) : (

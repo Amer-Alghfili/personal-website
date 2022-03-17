@@ -3,6 +3,9 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
+      zIndex: {
+        '-10': '-10'
+      },
       colors: {
         black: "#070D1C",
         lightBlack: "#0B0E16",
@@ -18,10 +21,11 @@ module.exports = {
         pop: "pop 200ms ease-in-out forwards",
       },
       height: {
+        sm: "25rem",
+        mid: "35rem",
         lg: "40rem",
         lgg: "45rem",
         lggg: "60rem",
-        mid: "35rem",
       },
       width: {
         lg: "35rem",

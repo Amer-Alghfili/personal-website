@@ -10,6 +10,7 @@ import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 import Input from "../../components/Input";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { Stack, Skeleton, SkeletonText, Box } from "@chakra-ui/react";
 
 function blog() {
   const [term, setTerm] = useState("");
@@ -50,16 +51,13 @@ function blog() {
           setIsLoading(false);
           setResult(results);
         })
-        .catch((err) => {
-          console.log(err);
-        });
+        .catch((err) => {});
     }
   };
 
   useEffect(
     function fetchBlogsEffect() {
       function fetchBlogs() {
-        console.log(locale);
         client
           .query([Prismic.Predicates.at("document.type", "post")], {
             lang: locale === "ar" ? "ar-sa" : "en-us",
@@ -68,9 +66,7 @@ function blog() {
             setIsLoading(false);
             setResult(results);
           })
-          .catch((err) => {
-            console.log(err);
-          });
+          .catch((err) => {});
       }
       fetchBlogs();
     },
@@ -84,15 +80,14 @@ function blog() {
     const { text } = primary;
     return (
       <li className="w-full" key={uid}>
-        <Link href={`/blog/${uid}`}>
-          <a className="p-4  bg-gray-800 w-full md:h-64 mb-6 overflow-ellipsis block shadow-md rounded-lg">
+        {/* <Link href={`/blog/${uid}`}> */}
+        <Link href={`/blog/loading?name=${uid}`}>
+          <a className="p-4 py-12 md:p-12 md:pb-16 bg-gray-800 w-full mb-6 overflow-ellipsis block shadow-md rounded-lg">
             <div className="flex items-center flex-wrap justify-between mb-4">
               <div className="text-sm text-gray-300">{release_date}</div>
             </div>
             <div>
-              <h1 className="font-bold text-lg xl:text-3xl mb-4 ">
-                {title[0].text}
-              </h1>
+              <h1 className="font-bold text-3xl mb-4 ">{title[0].text}</h1>
               <p className="w-full h-full md:block  overflow-hidden text-gray-300">
                 {text[0].text.length > 50
                   ? text[0].text.substring(0, 200) + " ..."
@@ -157,15 +152,27 @@ function blog() {
               </div>
             </div>
           </section>
-
           <section className="mt-2 xl:mt-10 flex justify-center ">
-            {isLoading ? (
-              <div className="w-full p-10 xl:w-4/6 flex justify-between items-center">
-                <LoadingSpinner />
-              </div>
-            ) : (
-              <ul className="w-full p-2 xl:w-4/6">{renderedResult}</ul>
-            )}
+            <ul className="w-full p-2 xl:w-4/6">
+              {isLoading
+                ? [
+                    <Stack>
+                      <Box className="p-4 py-12 md:p-12 md:pb-16 bg-gray-800 w-full mb-6 overflow-ellipsis block shadow-md rounded-lg">
+                        <SkeletonText my="7" noOfLines={1} spacing="4" />
+                        <Skeleton height="1rem" />
+                        <SkeletonText my="7" noOfLines={2} spacing="4" />
+                      </Box>
+                    </Stack>,
+                    <Stack>
+                      <Box className="p-4 py-12 md:p-12 md:pb-16 bg-gray-800 w-full mb-6 overflow-ellipsis block shadow-md rounded-lg">
+                        <SkeletonText my="7" noOfLines={1} spacing="4" />
+                        <Skeleton height="1rem" />
+                        <SkeletonText my="7" noOfLines={2} spacing="4" />
+                      </Box>
+                    </Stack>,
+                  ]
+                : renderedResult}
+            </ul>
           </section>
         </main>
         <Footer />
