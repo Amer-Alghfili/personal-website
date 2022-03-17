@@ -80,8 +80,8 @@ function blog() {
     const { text } = primary;
     return (
       <li className="w-full" key={uid}>
-        {/* <Link href={`/blog/${uid}`}> */}
-        <Link href={`/blog/loading?name=${uid}`}>
+        <Link href={`/blog/${uid}`}>
+        {/* <Link href={`/blog/loading?name=${uid}`}> */}
           <a className="p-4 py-12 md:p-12 md:pb-16 bg-gray-800 w-full mb-6 overflow-ellipsis block shadow-md rounded-lg">
             <div className="flex items-center flex-wrap justify-between mb-4">
               <div className="text-sm text-gray-300">{release_date}</div>

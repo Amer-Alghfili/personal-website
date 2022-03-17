@@ -65,7 +65,8 @@ function BookPage() {
 
     return (
       <li className="w-full" key={uid}>
-        <Link href={`/books/${book}/loading?name=${uid}`}>
+        {/* <Link href={`/books/${book}/loading?name=${uid}`}> */}
+        <Link href={`/books/${book}/${uid}`}>
           <a className="relative px-8 py-12 bg-gray-800 w-full mb-6 overflow-ellipsis block rounded-lg">
             <span className="italic absolute end-0 sm:top-4 top-6 text-8xl sm:text-9xl text-gray-200 opacity-5">
               #CH{index + 1}
