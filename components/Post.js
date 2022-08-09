@@ -1,9 +1,8 @@
+import { useToast } from "@chakra-ui/react";
 import React from "react";
-import Cover from "./Cover";
-import ProgressBar from "../components/ProgressBar";
-import SyntaxHighlighter from "react-syntax-highlighter";
 import { FiCopy } from "react-icons/fi";
-import { toast, useToast } from "@chakra-ui/react";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import ProgressBar from "../components/ProgressBar";
 
 function Post({ cover, title, content }) {
   const toast = useToast();
@@ -27,7 +26,7 @@ function Post({ cover, title, content }) {
         const key = t.text;
         switch (t.type) {
           case "paragraph":
-            if (spans.length > 0) {
+            if (spans.length > 0 && spans[0].data) {
               return (
                 <div key={i}>
                   <a
